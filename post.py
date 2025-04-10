@@ -2,7 +2,7 @@ import requests
 import pymysql.cursors
 
 # Fetch data from the API
-api_url = "https://jsonplaceholder.typicode.com/users"
+api_url = "https://jsonplaceholder.typicode.com/posts"
 response = requests.get(api_url)
 data = response.json()
 
@@ -10,27 +10,29 @@ data = response.json()
 conn = pymysql.connect(
     host="localhost",
     user="root",
-    password="", #Add your password
+    password="", # Add your password
     database="blog" 
 )
 cursor = conn.cursor()
 
 # Create table if it doesn't exist
 cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
+    CREATE TABLE IF NOT EXISTS posts (
         id INT PRIMARY KEY,
-        name VARCHAR(100),
-        email VARCHAR(100)
+        title VARCHAR(255),
+        body TEXT,
+        userId INT,
+        FOREIGN KEY(userId) REFERENCES users(id)
     )
 """)
 
 # Insert data into the table
-for user in data:
+for post in data:
     cursor.execute("""
-        INSERT INTO users (id, name, email) 
-        VALUES (%s, %s, %s)
-        ON DUPLICATE KEY UPDATE name = VALUES(name), email = VALUES(email)
-    """, (user["id"], user["name"], user["email"]))
+        INSERT INTO posts (id, title, body, userId) 
+        VALUES (%s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE title = VALUES(title), body = VALUES(body), userId = VALUES(userId)
+    """, (post["id"], post["title"], post["body"], post["userId"]))
 
 conn.commit()
 cursor.close()
