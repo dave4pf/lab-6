@@ -1,4 +1,3 @@
-
 import requests
 import pymysql.cursors
 
@@ -11,8 +10,8 @@ data = response.json()
 conn = pymysql.connect(
     host="localhost",
     user="root",
-    password="", # Add your password
-    database="campus" 
+    password="", #Add your password
+    database="blog" 
 )
 cursor = conn.cursor()
 
